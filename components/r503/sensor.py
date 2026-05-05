@@ -16,13 +16,13 @@ from esphome.const import (
     ICON_SECURITY,
 )
 
-from . import CONF_FINGERPRINT_GROW_ID, FingerprintGrowComponent
+from . import CONF_R503_ID, R503Component
 
-DEPENDENCIES = ["fingerprint_grow"]
+DEPENDENCIES = ["r503"]
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(CONF_FINGERPRINT_GROW_ID): cv.use_id(FingerprintGrowComponent),
+        cv.GenerateID(CONF_R503_ID): cv.use_id(R503Component),
         cv.Optional(CONF_FINGERPRINT_COUNT): sensor.sensor_schema(
             icon=ICON_FINGERPRINT,
             accuracy_decimals=0,
@@ -57,7 +57,7 @@ CONFIG_SCHEMA = cv.Schema(
 
 
 async def to_code(config):
-    hub = await cg.get_variable(config[CONF_FINGERPRINT_GROW_ID])
+    hub = await cg.get_variable(config[CONF_R503_ID])
 
     for key in [
         CONF_FINGERPRINT_COUNT,

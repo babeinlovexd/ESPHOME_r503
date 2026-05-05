@@ -1,16 +1,16 @@
-#include "fingerprint_grow.h"
+#include "r503.h"
 #include "esphome/core/gpio.h"
 #include "esphome/core/log.h"
 #include <cinttypes>
 
 namespace esphome {
-namespace fingerprint_grow {
+namespace r503 {
 
-static const char *const TAG = "fingerprint_grow";
+static const char *const TAG = "r503";
 
 // Based on Adafruit's library: https://github.com/adafruit/Adafruit-Fingerprint-Sensor-Library
 
-void FingerprintGrowComponent::update() {
+void R503Component::update() {
   if (this->enrollment_image_ > this->enrollment_buffers_) {
     this->finish_enrollment(this->save_fingerprint_());
     return;
@@ -57,7 +57,7 @@ void FingerprintGrowComponent::update() {
   ++this->enrollment_image_;
 }
 
-void FingerprintGrowComponent::setup() {
+void R503Component::setup() {
   this->has_sensing_pin_ = (this->sensing_pin_ != nullptr);
   this->has_power_pin_ = (this->sensor_power_pin_ != nullptr);
 
@@ -92,7 +92,7 @@ void FingerprintGrowComponent::setup() {
   this->mark_failed();
 }
 
-void FingerprintGrowComponent::enroll_fingerprint(uint16_t finger_id, uint8_t num_buffers) {
+void R503Component::enroll_fingerprint(uint16_t finger_id, uint8_t num_buffers) {
   ESP_LOGI(TAG, "Starting enrollment in slot %d", finger_id);
   if (this->enrolling_binary_sensor_ != nullptr) {
     this->enrolling_binary_sensor_->publish_state(true);
@@ -102,7 +102,7 @@ void FingerprintGrowComponent::enroll_fingerprint(uint16_t finger_id, uint8_t nu
   this->enrollment_image_ = 1;
 }
 
-void FingerprintGrowComponent::finish_enrollment(uint8_t result) {
+void R503Component::finish_enrollment(uint8_t result) {
   if (result == OK) {
     this->enrollment_done_callback_.call(this->enrollment_slot_);
     this->get_fingerprint_count_();
@@ -119,7 +119,7 @@ void FingerprintGrowComponent::finish_enrollment(uint8_t result) {
   ESP_LOGI(TAG, "Finished enrollment");
 }
 
-void FingerprintGrowComponent::scan_and_match_() {
+void R503Component::scan_and_match_() {
   if (this->has_sensing_pin_) {
     ESP_LOGD(TAG, "Scan and match");
   } else {
@@ -150,7 +150,7 @@ void FingerprintGrowComponent::scan_and_match_() {
   }
 }
 
-uint8_t FingerprintGrowComponent::scan_image_(uint8_t buffer) {
+uint8_t R503Component::scan_image_(uint8_t buffer) {
   if (this->has_sensing_pin_) {
     ESP_LOGD(TAG, "Getting image %d", buffer);
   } else {
@@ -199,7 +199,7 @@ uint8_t FingerprintGrowComponent::scan_image_(uint8_t buffer) {
   return send_result;
 }
 
-uint8_t FingerprintGrowComponent::save_fingerprint_() {
+uint8_t R503Component::save_fingerprint_() {
   ESP_LOGI(TAG, "Creating model");
   this->data_ = {REG_MODEL};
   switch (this->send_command_()) {
@@ -227,7 +227,7 @@ uint8_t FingerprintGrowComponent::save_fingerprint_() {
   return this->data_[0];
 }
 
-bool FingerprintGrowComponent::check_password_() {
+bool R503Component::check_password_() {
   ESP_LOGD(TAG, "Checking password");
   this->data_ = {VERIFY_PASSWORD, (uint8_t) (this->password_ >> 24), (uint8_t) (this->password_ >> 16),
                  (uint8_t) (this->password_ >> 8), (uint8_t) (this->password_ & 0xFF)};
@@ -242,7 +242,7 @@ bool FingerprintGrowComponent::check_password_() {
   return false;
 }
 
-bool FingerprintGrowComponent::set_password_() {
+bool R503Component::set_password_() {
   ESP_LOGI(TAG, "Setting new password: %" PRIu32, this->new_password_);
   this->data_ = {SET_PASSWORD, (uint8_t) (this->new_password_ >> 24), (uint8_t) (this->new_password_ >> 16),
                  (uint8_t) (this->new_password_ >> 8), (uint8_t) (this->new_password_ & 0xFF)};
@@ -255,7 +255,7 @@ bool FingerprintGrowComponent::set_password_() {
   return false;
 }
 
-bool FingerprintGrowComponent::get_parameters_() {
+bool R503Component::get_parameters_() {
   ESP_LOGD(TAG, "Getting parameters");
   this->data_ = {READ_SYS_PARAM};
   if (this->send_command_() == OK) {
@@ -280,7 +280,7 @@ bool FingerprintGrowComponent::get_parameters_() {
   return false;
 }
 
-void FingerprintGrowComponent::get_fingerprint_count_() {
+void R503Component::get_fingerprint_count_() {
   ESP_LOGD(TAG, "Getting fingerprint count");
   this->data_ = {TEMPLATE_COUNT};
   if (this->send_command_() == OK) {
@@ -290,7 +290,7 @@ void FingerprintGrowComponent::get_fingerprint_count_() {
   }
 }
 
-void FingerprintGrowComponent::delete_fingerprint(uint16_t finger_id) {
+void R503Component::delete_fingerprint(uint16_t finger_id) {
   ESP_LOGI(TAG, "Deleting fingerprint in slot %d", finger_id);
   this->data_ = {DELETE, (uint8_t) (finger_id >> 8), (uint8_t) (finger_id & 0xFF), 0x00, 0x01};
   switch (this->send_command_()) {
@@ -304,7 +304,7 @@ void FingerprintGrowComponent::delete_fingerprint(uint16_t finger_id) {
   }
 }
 
-void FingerprintGrowComponent::delete_all_fingerprints() {
+void R503Component::delete_all_fingerprints() {
   ESP_LOGI(TAG, "Deleting all stored fingerprints");
   this->data_ = {DELETE_ALL};
   switch (this->send_command_()) {
@@ -318,7 +318,7 @@ void FingerprintGrowComponent::delete_all_fingerprints() {
   }
 }
 
-void FingerprintGrowComponent::led_control(bool state) {
+void R503Component::led_control(bool state) {
   ESP_LOGD(TAG, "Setting LED");
   if (state) {
     this->data_ = {LED_ON};
@@ -338,7 +338,7 @@ void FingerprintGrowComponent::led_control(bool state) {
   }
 }
 
-void FingerprintGrowComponent::aura_led_control(uint8_t state, uint8_t speed, uint8_t color, uint8_t count) {
+void R503Component::aura_led_control(uint8_t state, uint8_t speed, uint8_t color, uint8_t count) {
   const uint32_t now = millis();
   const uint32_t elapsed = now - this->last_aura_led_control_;
   if (elapsed < this->last_aura_led_duration_) {
@@ -361,7 +361,7 @@ void FingerprintGrowComponent::aura_led_control(uint8_t state, uint8_t speed, ui
   }
 }
 
-uint8_t FingerprintGrowComponent::transfer_(std::vector<uint8_t> &data_buffer) {
+uint8_t R503Component::transfer_(std::vector<uint8_t> &data_buffer) {
   while (this->available())
     this->read();
   this->write((uint8_t) (START_CODE >> 8));
@@ -470,12 +470,12 @@ uint8_t FingerprintGrowComponent::transfer_(std::vector<uint8_t> &data_buffer) {
   return TIMEOUT;
 }
 
-uint8_t FingerprintGrowComponent::send_command_() {
+uint8_t R503Component::send_command_() {
   this->sensor_wakeup_();
   return this->transfer_(this->data_);
 }
 
-void FingerprintGrowComponent::sensor_wakeup_() {
+void R503Component::sensor_wakeup_() {
   // Immediately return if there is no power pin or the sensor is already on
   if ((!this->has_power_pin_) || (this->is_sensor_awake_))
     return;
@@ -523,7 +523,7 @@ void FingerprintGrowComponent::sensor_wakeup_() {
   }
 }
 
-void FingerprintGrowComponent::sensor_sleep_() {
+void R503Component::sensor_sleep_() {
   // Immediately return if the power pin feature is not implemented
   if (!this->has_power_pin_)
     return;
@@ -533,7 +533,7 @@ void FingerprintGrowComponent::sensor_sleep_() {
   ESP_LOGD(TAG, "Fingerprint sensor is now in sleep mode.");
 }
 
-void FingerprintGrowComponent::dump_config() {
+void R503Component::dump_config() {
   char sensing_pin_buf[GPIO_SUMMARY_MAX_LEN];
   char power_pin_buf[GPIO_SUMMARY_MAX_LEN];
   if (this->has_sensing_pin_) {
@@ -581,5 +581,5 @@ void FingerprintGrowComponent::dump_config() {
   }
 }
 
-}  // namespace fingerprint_grow
+}  // namespace r503
 }  // namespace esphome
