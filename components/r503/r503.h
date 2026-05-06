@@ -29,7 +29,7 @@ enum GrowPacketType {
 };
 
 enum GrowCommand {
-  GET_IMAGE = 0x01,
+  GET_IMAGE_EX = 0x28,
   IMAGE_2_TZ = 0x02,
   SEARCH = 0x04,
   REG_MODEL = 0x05,

@@ -156,7 +156,7 @@ uint8_t R503Component::scan_image_(uint8_t buffer) {
   } else {
     ESP_LOGV(TAG, "Getting image %d", buffer);
   }
-  this->data_ = {GET_IMAGE};
+  this->data_ = {GET_IMAGE_EX};
   uint8_t send_result = this->send_command_();
   switch (send_result) {
     case OK:
@@ -171,6 +171,7 @@ uint8_t R503Component::scan_image_(uint8_t buffer) {
       }
       return send_result;
     case IMAGE_FAIL:
+    case FEATURE_FAIL:
       ESP_LOGE(TAG, "Imaging error");
       this->finger_scan_invalid_callback_.call();
       return send_result;
