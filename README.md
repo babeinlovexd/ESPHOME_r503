@@ -17,13 +17,15 @@ This is an external component for ESPHome that adds support for the GROW R503 fi
 
 ## Installation
 
-You can include this external component in your ESPHome configuration directly from your local folder structure.
+You can include this external component in your ESPHome configuration directly from the Git repository's main branch.
 
 ```yaml
 external_components:
   - source:
-      type: local
-      path: r503_fingerprint # The path to this folder relative to your config file
+      type: git
+      url: https://github.com/babeinlovexd/ESPHOME_r503
+      ref: main
+    components: [ r503_fingerprint ]
 ```
 
 ## Basic Configuration Example
