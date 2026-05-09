@@ -1,6 +1,6 @@
 # R503 Fingerprint Sensor for ESPHome
 
-This is an external component for ESPHome that adds support for the GROW R503 fingerprint sensor. It is based on the built-in `fingerprint_grow` component but includes several additional commands specific to the R503 sensor module, allowing you to access extended functionalities documented in the R503 datasheet.
+This is an external component for ESPHome that adds robust support for the GROW R503 fingerprint sensor. It is based on the built-in `fingerprint_grow` component but includes several additional commands specific to the R503 sensor module, allowing you to access extended functionalities documented in the R503 datasheet.
 
 ## Features
 

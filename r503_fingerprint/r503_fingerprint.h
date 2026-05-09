@@ -160,6 +160,10 @@ class R503FingerprintComponent : public PollingComponent, public uart::UARTDevic
     this->enrollment_failed_callback_.add(std::forward<F>(callback));
   }
 
+  template<typename F> void add_on_notepad_read_callback(F &&callback) {
+    this->notepad_read_callback_.add(std::forward<F>(callback));
+  }
+
   void enroll_fingerprint(uint16_t finger_id, uint8_t num_buffers);
   void finish_enrollment(uint8_t result);
   void delete_fingerprint(uint16_t finger_id);

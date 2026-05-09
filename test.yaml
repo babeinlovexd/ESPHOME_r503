@@ -1,0 +1,27 @@
+esphome:
+  name: test
+  build_path: build
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+external_components:
+  - source:
+      type: local
+      path: .
+    components: [r503_fingerprint]
+
+logger:
+
+uart:
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 57600
+
+r503_fingerprint:
+  id: my_fingerprint
+  on_notepad_read:
+    - logger.log:
+        format: "Notepad read: Page %d, Text: %s"
+        args: [page, text.c_str()]

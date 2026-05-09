@@ -125,6 +125,7 @@ CONFIG_SCHEMA = cv.All(
             cv.Optional(CONF_ON_ENROLLMENT_SCAN): automation.validate_automation({}),
             cv.Optional(CONF_ON_ENROLLMENT_DONE): automation.validate_automation({}),
             cv.Optional(CONF_ON_ENROLLMENT_FAILED): automation.validate_automation({}),
+            cv.Optional(CONF_ON_NOTEPAD_READ): automation.validate_automation({}),
         }
     )
     .extend(cv.polling_component_schema("500ms"))
@@ -167,6 +168,11 @@ _CALLBACK_AUTOMATIONS = (
         CONF_ON_ENROLLMENT_FAILED,
         "add_on_enrollment_failed_callback",
         [(cg.uint16, "finger_id")],
+    ),
+    automation.CallbackAutomation(
+        CONF_ON_NOTEPAD_READ,
+        "add_on_notepad_read_callback",
+        [(cg.uint8, "page"), (cg.std_string, "text")],
     ),
 )
 
