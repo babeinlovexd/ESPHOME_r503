@@ -1,23 +1,24 @@
-# R503 Fingerprint Sensor for ESPHome
+<p align="center">
+  <a href="https://github.com/babeinlovexd"><img src="https://raw.githubusercontent.com/babeinlovexd/babeinlovexd/main/bxd-github-header.svg" width="520" alt="BxD / BabeinlovexD"></a>
+</p>
 
-This is an external component for ESPHome that adds robust support for the GROW R503 fingerprint sensor. It is based on the built-in `fingerprint_grow` component but includes several additional commands specific to the R503 sensor module, allowing you to access extended functionalities documented in the R503 datasheet.
+# ESPHome R503
+
+[Issues](https://github.com/babeinlovexd/ESPHOME_r503/issues)
+
+An external ESPHome component for the **GROW R503 fingerprint sensor**, based on ESPHome's `fingerprint_grow` implementation and extended with R503 commands.
 
 ## Features
 
-- **Fingerprint Enrollment & Matching**: Standard fingerprint scanning, matching, and enrollment.
-- **Aura LED Control**: Full control over the built-in LED ring (colors, states, speed, and count).
-- **Security Level Control**: Dynamically adjust the matching threshold (Security Level 1-5).
-- **Notepad Storage**: Read from and write to the internal 512-byte flash notepad (16 pages x 32 bytes).
-- **Index Table**: Read the fingerprint template index table to see which slots are occupied.
-- **Extended Commands**:
-  - `GetImageEx`: Advanced image collection.
-  - `Cancel`: Cancel the current ongoing instruction.
-  - `Soft Reset`: Reboot the sensor module over UART.
-  - `Check Sensor`: Query the health status of the sensor.
+- Fingerprint enrollment, matching and deletion.
+- Aura LED ring control and configurable security level.
+- Read/write access to the 512-byte notepad and template index table.
+- Sensor checks, soft reset, cancellation and extended image collection.
+- Sensors for fingerprint count, capacity, status, security level, last ID and confidence.
 
 ## Installation
 
-You can include this external component in your ESPHome configuration directly from the Git repository's main branch.
+Add the component to an existing ESPHome device configuration:
 
 ```yaml
 external_components:
@@ -25,12 +26,8 @@ external_components:
       type: git
       url: https://github.com/babeinlovexd/ESPHOME_r503
       ref: main
-    components: [ r503_fingerprint ]
-```
+    components: [r503_fingerprint]
 
-## Basic Configuration Example
-
-```yaml
 uart:
   tx_pin: GPIO17
   rx_pin: GPIO16
@@ -38,13 +35,13 @@ uart:
 
 r503_fingerprint:
   id: my_fingerprint
-  sensing_pin: GPIO18 # Optional: Wakes up the ESP when touched
+  sensing_pin: GPIO18
   on_finger_scan_matched:
     - logger.log:
-        format: "Finger matched! ID: %d, Confidence: %d"
+        format: "Finger matched: ID=%d, confidence=%d"
         args: [finger_id, confidence]
   on_finger_scan_unmatched:
-    - logger.log: "Finger not matched!"
+    - logger.log: "Finger not matched"
 
 sensor:
   - platform: r503_fingerprint
@@ -52,7 +49,35 @@ sensor:
       name: "Fingerprint Count"
     last_finger_id:
       name: "Last Finger ID"
-
 ```
 
-For detailed information on all available configuration options, actions, and sensors, please refer to [docu.md](docu.md).
+GPIO assignments are an example for an ESP32, not a universal wiring map. Connect controller TX to sensor RX and controller RX to sensor TX, and follow the module's supply and logic-level requirements. `sensing_pin` is optional.
+
+## Configuration & actions
+
+The full [configuration reference](docu.md) documents callbacks, enrollment/deletion, LED control, notepad and diagnostic commands. The repository also includes [test.yaml](test.yaml) and the [R503 datasheet](R503_datasheet.pdf).
+
+If several sensors share the configuration, assign each sensor platform's `r503_fingerprint_id` to the relevant component. `sensor_power_pin` requires `sensing_pin`; `idle_period_to_sleep` additionally requires `sensor_power_pin`.
+
+## Troubleshooting
+
+- **No response:** Check UART RX/TX direction, baud rate, common ground and power supply.
+- **Enrollment fails:** Read the enrollment callbacks and sensor capacity before retrying.
+- **Unknown sensor password:** Match the configured password to the module. `new_password` changes the sensor password; do not set it casually or lose the new value.
+- **LED state differs from expectations:** Check the supported Aura LED state, color, speed and count in the reference.
+
+Fingerprint recognition provides an event for your own automation. It does not, by itself, implement a complete door-lock system.
+
+---
+
+## Builds und Releases
+
+Version: **0.1.0** ([VERSION](VERSION)). [GitHub Actions](.github/workflows/release.yml) prüft Pushes und Pull Requests. Ein Tag passend zu `v` + `VERSION` veröffentlicht das Release erst nach erfolgreichen Jobs; manuelle Läufe liefern Build-Artefakte. [Downloads](https://github.com/babeinlovexd/ESPHOME_r503/releases).
+
+ESPHome-CI verwendet Platzhalter-Zugangsdaten und flasht keine Geräte. Vor dem Einsatz eigene Secrets und Pinbelegung prüfen.
+
+## Contributing
+
+Questions, bug reports and contributions are welcome. Please include the version, setup and steps to reproduce in an [issue](https://github.com/babeinlovexd/ESPHOME_r503/issues). Discuss larger changes before submitting a pull request.
+
+[BxD / BabeinlovexD](https://github.com/babeinlovexd) · [Website](https://babeinlovexd.de/)
